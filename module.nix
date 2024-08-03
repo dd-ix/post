@@ -64,13 +64,14 @@ in
           POST_LISTEN_ADDR = "${if (lib.hasInfix ":" listenAddr) then "[${listenAddr}]" else listenAddr}:${toString cfg.listen.port}";
           POST_SMTP_ADDR = "${if (lib.hasInfix ":" smtpAddr) then "[${smtpAddr}]" else smtpAddr}:${toString cfg.smtp.port}";
           POST_TEMPLATE_GLOB = cfg.templateGlob;
-          POST_API_TOKEN_FILE = cfg.apiTokenFile;
+          POST_API_TOKEN_FILE = "%d/api_token";
         };
 
       serviceConfig = {
         ExecStart = "${cfg.package}/bin/post";
         DynamicUser = true;
         User = "post";
+        LoadCredential = "api_token:${cfg.apiTokenFile}";
       };
     };
   };
