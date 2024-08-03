@@ -10,7 +10,7 @@ tokio = { version = "1.38", features = ["macros", "rt-multi-thread", "net", "fs"
 tracing = { version = "0.1", features = ["release_max_level_info"] }
 tracing-subscriber = { version = "0.3", features = ["fmt", "ansi"] }
 axum = { version = "0.7", features = ["tokio", "http1", "json"] }
-tower-http = { version = "0.5", features = ["trace"] }
+tower-http = { version = "0.5", features = ["trace", "validate-request", "sensitive-headers", "auth"] }
 tera = { version = "1.20", default-features = false }
 serde = { version = "1.0", features = ["derive"] }
 anyhow = { version = "1.0", features = ["std"] }

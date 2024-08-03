@@ -1,4 +1,4 @@
-use std::net::SocketAddr;
+use std::{net::SocketAddr, path::PathBuf};
 
 use clap::Parser;
 
@@ -11,4 +11,20 @@ pub(super) struct Args {
   pub(super) smtp_addr: SocketAddr,
   #[arg(short = 't', long, env = "POST_TEMPLATE_GLOB")]
   pub(super) template_glob: String,
+  #[arg(
+    short = 's',
+    long,
+    env = "POST_API_TOKEN",
+    conflicts_with = "api_token_file",
+    required_unless_present = "api_token_file"
+  )]
+  pub(super) api_token: Option<String>,
+  #[arg(
+    short = 'f',
+    long,
+    env = "POST_API_TOKEN_FILE",
+    conflicts_with = "api_token",
+    required_unless_present = "api_token"
+  )]
+  pub(super) api_token_file: Option<PathBuf>,
 }

@@ -15,30 +15,34 @@ in
     listen = {
       addr = lib.mkOption {
         type = lib.types.str;
-        description =  "The ip address the http listener should be listening on.";
+        description = "The ip address the http listener should be listening on.";
         default = "::";
       };
       port = lib.mkOption {
         type = lib.types.port;
-        description =  "The port the http listener should be listening on.";
+        description = "The port the http listener should be listening on.";
         default = 9876;
       };
     };
     smtp = {
       addr = lib.mkOption {
         type = lib.types.str;
-        description =  "The ip address the smtp server is listening on.";
+        description = "The ip address the smtp server is listening on.";
         default = "::1";
       };
       port = lib.mkOption {
         type = lib.types.port;
-        description =  "The port address the smtp server is listening on.";
+        description = "The port address the smtp server is listening on.";
         default = 25;
       };
     };
     templateGlob = lib.mkOption {
       type = lib.types.str;
       description = "The glob pattern where email templates can be found.";
+    };
+    apiTokenFile = lib.mkOption {
+      type = lib.types.str;
+      description = "The path of the while which contains the api token.";
     };
   };
 
@@ -59,7 +63,8 @@ in
         {
           POST_LISTEN_ADDR = "${if (lib.hasInfix ":" listenAddr) then "[${listenAddr}]" else listenAddr}:${toString cfg.listen.port}";
           POST_SMTP_ADDR = "${if (lib.hasInfix ":" smtpAddr) then "[${smtpAddr}]" else smtpAddr}:${toString cfg.smtp.port}";
-          POST_TEMPLATE_GLOB = "${cfg.templateGlob}";
+          POST_TEMPLATE_GLOB = cfg.templateGlob;
+          POST_API_TOKEN_FILE = cfg.apiTokenFile;
         };
 
       serviceConfig = {

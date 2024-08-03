@@ -1,10 +1,14 @@
 use std::future::IntoFuture;
+use std::iter::once;
 use std::sync::Arc;
 
+use axum::http::header::AUTHORIZATION;
 use clap::Parser;
 use tokio::net::TcpListener;
 use tokio::select;
+use tower_http::sensitive_headers::SetSensitiveRequestHeadersLayer;
 use tower_http::trace::TraceLayer;
+use tower_http::validate_request::ValidateRequestHeaderLayer;
 use tracing::{info, Level};
 use tracing_subscriber::FmtSubscriber;
 
@@ -51,6 +55,11 @@ async fn main() -> anyhow::Result<()> {
       email_service,
       template_service,
     })
+    .layer(ValidateRequestHeaderLayer::bearer(&match args.api_token {
+      None => tokio::fs::read_to_string(args.api_token_file.unwrap()).await?,
+      Some(token) => token,
+    }))
+    .layer(SetSensitiveRequestHeadersLayer::new(once(AUTHORIZATION)))
     .layer(TraceLayer::new_for_http())
     .into_make_service();
 
