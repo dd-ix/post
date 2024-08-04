@@ -47,7 +47,7 @@ jobs:
         run: |
           mv target/${{ matrix.target }}/release/post post_${{ matrix.target }}
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: post_${{ matrix.target }}
           path: post_${{ matrix.target }}
