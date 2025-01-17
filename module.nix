@@ -5,13 +5,8 @@ let
 in
 {
   options.services.post = {
-    package = lib.mkOption {
-      type = lib.types.package;
-      default = pkgs.post;
-      defaultText = lib.literalExpression "pkgs.post";
-      description = "Which post derivation to use.";
-    };
     enable = lib.mkEnableOption "post";
+    package = lib.mkPackageOption pkgs "post" { };
     listen = {
       addr = lib.mkOption {
         type = lib.types.str;
@@ -57,18 +52,17 @@ in
 
       environment =
         let
-          listenAddr = cfg.listen.addr;
-          smtpAddr = cfg.listen.addr;
+          addrToString = addr: port: "${if (lib.hasInfix ":" addr) then "[${addr}]" else addr}:${toString port}";
         in
         {
-          POST_LISTEN_ADDR = "${if (lib.hasInfix ":" listenAddr) then "[${listenAddr}]" else listenAddr}:${toString cfg.listen.port}";
-          POST_SMTP_ADDR = "${if (lib.hasInfix ":" smtpAddr) then "[${smtpAddr}]" else smtpAddr}:${toString cfg.smtp.port}";
+          POST_LISTEN_ADDR = addrToString cfg.listen.addr cfg.listen.port;
+          POST_SMTP_ADDR = addrToString cfg.smtp.addr cfg.smtp.port;
           POST_TEMPLATE_GLOB = cfg.templateGlob;
           POST_API_TOKEN_FILE = "%d/api_token";
         };
 
       serviceConfig = {
-        ExecStart = "${cfg.package}/bin/post";
+        ExecStart = lib.getExe cfg.package;
         DynamicUser = true;
         User = "post";
         LoadCredential = "api_token:${cfg.apiTokenFile}";

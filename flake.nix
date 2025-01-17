@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -14,19 +14,17 @@
         in
         {
           packages = rec {
-            post = pkgs.callPackage ./derivation.nix {
-              cargoToml = ./Cargo.toml;
-            };
+            post = pkgs.callPackage ./package.nix { };
             default = post;
           };
         }
       ) // {
       overlays.default = _: prev: {
-        post = self.packages."${prev.system}".default;
+        inherit (self.packages."${prev.system}") post;
       };
 
       nixosModules = rec {
-        post = import ./module.nix;
+        post = ./module.nix;
         default = post;
       };
     };
